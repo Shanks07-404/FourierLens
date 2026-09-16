@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0B1220;
+    color: #E8F1EC;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Oscilloscope CRT faint grid lines */
+.crt-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(27, 42, 58, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 42, 58, 0.45) 1px, transparent 1px);
+}
+
+.crt-grid-dense {
+  background-size: 16px 16px;
+  background-image: 
+    linear-gradient(to right, rgba(27, 42, 58, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 42, 58, 0.35) 1px, transparent 1px);
+}
+
+/* Subtle CRT screen scanline overlay */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+/* Glowing text effects */
+.glow-text-green {
+  text-shadow: 0 0 10px rgba(92, 230, 176, 0.5), 0 0 20px rgba(92, 230, 176, 0.2);
+}
+
+.glow-text-coral {
+  text-shadow: 0 0 10px rgba(255, 138, 92, 0.5), 0 0 20px rgba(255, 138, 92, 0.2);
+}
+
+/* Custom range slider */
+input[type="range"] {
+  accent-color: #5CE6B0;
+}
