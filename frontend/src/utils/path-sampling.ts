@@ -117,7 +117,10 @@ export function normalizePoints(
 /**
  * Built-in preset shapes: Star, Heart, Spiral, Trefoil.
  */
-export function getPresetPath(preset: 'star' | 'heart' | 'spiral' | 'trefoil', numPoints = 200): Point[] {
+export function getPresetPath(
+  preset: 'star' | 'heart' | 'spiral' | 'trefoil' | 'lissajous' | 'rose',
+  numPoints = 200
+): Point[] {
   const points: Point[] = [];
 
   if (preset === 'star') {
@@ -159,6 +162,27 @@ export function getPresetPath(preset: 'star' | 'heart' | 'spiral' | 'trefoil', n
       const t = (i / numPoints) * 2 * Math.PI;
       const r = 70 * (2 + Math.cos(3 * t));
       points.push([200 + r * Math.cos(2 * t), 200 + r * Math.sin(2 * t)]);
+    }
+    return points;
+  }
+
+  if (preset === 'lissajous') {
+    // 3:2 frequency ratio Lissajous knot
+    for (let i = 0; i < numPoints; i++) {
+      const t = (i / numPoints) * 2 * Math.PI;
+      const x = 140 * Math.sin(3 * t + Math.PI / 4);
+      const y = 140 * Math.sin(2 * t);
+      points.push([200 + x, 200 + y]);
+    }
+    return points;
+  }
+
+  if (preset === 'rose') {
+    // 5-petal mathematical rose curve (rhodonea)
+    for (let i = 0; i < numPoints; i++) {
+      const t = (i / numPoints) * 2 * Math.PI;
+      const r = 140 * Math.cos(5 * t);
+      points.push([200 + r * Math.cos(t), 200 + r * Math.sin(t)]);
     }
     return points;
   }
