@@ -151,7 +151,7 @@ export const DrawCanvas: React.FC<DrawCanvasProps> = ({
     }
   };
 
-  const loadPreset = (preset: 'star' | 'heart' | 'spiral' | 'trefoil') => {
+  const loadPreset = (preset: 'star' | 'heart' | 'spiral' | 'trefoil' | 'lissajous' | 'rose') => {
     setSelectedPreset(preset);
     const path = getPresetPath(preset, 200);
     setPoints(path);
@@ -209,9 +209,9 @@ export const DrawCanvas: React.FC<DrawCanvasProps> = ({
 
       {/* Preset and Action Controls */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-xs text-osc-slate font-mono mr-1">Presets:</span>
-          {(['star', 'heart', 'spiral', 'trefoil'] as const).map((p) => (
+          {(['star', 'heart', 'spiral', 'trefoil', 'lissajous', 'rose'] as const).map((p) => (
             <button
               key={p}
               onClick={() => loadPreset(p)}
