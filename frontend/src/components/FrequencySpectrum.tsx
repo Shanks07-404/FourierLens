@@ -105,9 +105,11 @@ export const FrequencySpectrum: React.FC<FrequencySpectrumProps> = ({
           .style('opacity', 1)
           .html(
             `<div><strong style="color: #5CE6B0;">Freq k: ${d.frequency}</strong></div>` +
-              `<div>Radius: ${d.radius.toFixed(2)}</div>` +
-              `<div>Phase: ${(d.phase * (180 / Math.PI)).toFixed(1)}°</div>` +
-              `<div>Status: ${d.isActive ? 'Active' : 'Truncated'}</div>`
+            `<div>Radius |c_k|: ${d.radius.toFixed(3)}</div>` +
+            `<div>Phase ∠c_k: ${(d.phase * (180 / Math.PI)).toFixed(1)}°</div>` +
+            `<div>Re: ${(d.radius * Math.cos(d.phase)).toFixed(3)}</div>` +
+            `<div>Im: ${(d.radius * Math.sin(d.phase)).toFixed(3)}</div>` +
+            `<div>Status: ${d.isActive ? 'Active' : 'Truncated'}</div>`
           );
       })
       .on('mousemove', (event) => {
