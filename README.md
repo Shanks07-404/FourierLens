@@ -113,8 +113,16 @@ fourierlens/
 
 ---
 
+## Documentation & Contributing
+
+- [System Architecture & Dataflow Diagram](docs/architecture.md)
+- [Contribution Guide & Development Setup](CONTRIBUTING.md)
+
+---
+
 ## References
 
 - Tancik et al. (2020) — *Fourier Features Let Networks Learn High Frequency Functions in Low Dimensional Domains* — [arXiv:2006.10739](https://arxiv.org/abs/2006.10739)
 - Mildenhall et al. (2020) — *NeRF: Representing Scenes as Neural Radiance Fields* — [arXiv:2003.08934](https://arxiv.org/abs/2003.08934)
 - Rahaman et al. (2019) — *On the Spectral Bias of Neural Networks* — [arXiv:1806.08734](https://arxiv.org/abs/1806.08734)
+
