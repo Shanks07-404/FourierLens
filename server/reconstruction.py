@@ -20,11 +20,13 @@ class FourierReconstructionSession:
         self.raw_path: List[Tuple[float, float]] = []
         self.epicycles: List[Epicycle] = []
         self.num_points: int = 200
+        self._reconstruction_cache: Dict[Tuple[int, int], List[Tuple[float, float]]] = {}
 
     def set_path(self, points: List[Tuple[float, float]], num_points: int = 200) -> List[Epicycle]:
         """
         Sets a new path, computes epicycles sorted by descending radius.
         """
+        self._reconstruction_cache.clear()
         if len(points) < 3:
             self.raw_path = []
             self.epicycles = []
@@ -53,13 +55,22 @@ class FourierReconstructionSession:
     def get_reconstruction(self, num_terms: Optional[int] = None, num_points: Optional[int] = None) -> List[Tuple[float, float]]:
         """
         Reconstructs the full closed loop for a given number of terms.
+        Memoizes results in _reconstruction_cache so interactive slider dragging
+        and repeated sweeps avoid redundant evaluation.
         """
         if not self.epicycles:
             return []
 
         terms = self.total_terms if num_terms is None else min(max(1, num_terms), self.total_terms)
         pts = self.num_points if num_points is None else num_points
-        return reconstruct_path(self.epicycles, num_points=pts, num_terms=terms)
+
+        cache_key = (terms, pts)
+        if cache_key in self._reconstruction_cache:
+            return self._reconstruction_cache[cache_key]
+
+        reconstructed = reconstruct_path(self.epicycles, num_points=pts, num_terms=terms)
+        self._reconstruction_cache[cache_key] = reconstructed
+        return reconstructed
 
     def get_frame(self, t: float, num_terms: Optional[int] = None) -> Dict[str, Any]:
         """
