@@ -124,6 +124,36 @@ class TestFourierMath(unittest.TestCase):
         self.assertEqual(output_dim(6), 12)
         self.assertEqual(output_dim(16), 32)
 
+    def test_minimal_two_point_path(self):
+        """10. Minimal 2-point path returns epicycles and reconstructs without error."""
+        min_pts = [(0.0, 0.0), (10.0, 20.0)]
+        epicycles = path_to_epicycles(min_pts)
+        self.assertEqual(len(epicycles), 2)
+
+        reconstructed = reconstruct_path(epicycles, num_points=2, num_terms=2)
+        self.assertEqual(len(reconstructed), 2)
+        np.testing.assert_allclose(reconstructed, min_pts, atol=1e-8)
+
+    def test_zero_terms_and_empty_path(self):
+        """11. Edge case handling for zero terms and empty path."""
+        epicycles = path_to_epicycles(self.points)
+
+        # num_terms = 0
+        frames = epicycle_frame(epicycles, t=0.5, num_terms=0)
+        self.assertEqual(frames, [])
+
+        pt = reconstruct_point(epicycles, t=0.5, num_terms=0)
+        self.assertEqual(pt, (0.0, 0.0))
+
+        # Empty path input
+        self.assertEqual(path_to_epicycles([]), [])
+
+    def test_zero_sample_points_reconstruction(self):
+        """12. Edge case handling for zero sample points in reconstruct_path."""
+        epicycles = path_to_epicycles(self.points)
+        self.assertEqual(reconstruct_path(epicycles, num_points=0, num_terms=5), [])
+        self.assertEqual(reconstruct_path([], num_points=20, num_terms=5), [])
+
 
 if __name__ == "__main__":
     unittest.main()
