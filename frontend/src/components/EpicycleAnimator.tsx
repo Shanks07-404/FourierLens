@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Play, Pause, RotateCcw, Eye, EyeOff, Activity } from 'lucide-react';
+import { Play, Pause, RotateCcw, Eye, EyeOff, Activity, Download } from 'lucide-react';
 import { EpicycleItem } from '../api/socket';
 import { Point } from '../utils/path-sampling';
 
@@ -34,6 +34,54 @@ export const EpicycleAnimator: React.FC<EpicycleAnimatorProps> = ({
   useEffect(() => {
     trailRef.current = [];
   }, [epicycles, numTerms]);
+
+  // Space key toggles play/pause
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        setIsPlaying((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // SVG export of the current reconstructed path at active term count
+  const exportSVG = useCallback(() => {
+    if (!epicycles.length) return;
+    const activeTerms = epicycles.slice(0, numTerms);
+    const sampleN = 300;
+    const pathParts: string[] = [];
+
+    for (let s = 0; s <= sampleN; s++) {
+      const st = s / sampleN;
+      let px = 0;
+      let py = 0;
+      for (const ep of activeTerms) {
+        const a = 2 * Math.PI * ep.frequency * st + ep.phase;
+        px += ep.radius * Math.cos(a);
+        py += ep.radius * Math.sin(a);
+      }
+      pathParts.push(`${s === 0 ? 'M' : 'L'}${px.toFixed(2)},${py.toFixed(2)}`);
+    }
+    pathParts.push('Z');
+
+    const svgContent = [
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">`,
+      `  <rect width="${width}" height="${height}" fill="#0B1220"/>`,
+      `  <path d="${pathParts.join(' ')}" stroke="#5CE6B0" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`,
+      `</svg>`,
+    ].join('\n');
+
+    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fourierlens-k${numTerms}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [epicycles, numTerms, width, height]);
 
   const drawFrame = useCallback(
     (t: number) => {
@@ -328,6 +376,16 @@ export const EpicycleAnimator: React.FC<EpicycleAnimatorProps> = ({
             }`}
           >
             Target Ghost
+          </button>
+
+          <button
+            onClick={exportSVG}
+            disabled={!epicycles.length}
+            title="Download reconstructed curve as SVG"
+            className="ml-auto px-2.5 py-1 rounded border border-osc-green/40 bg-osc-panel text-osc-green text-xs font-mono flex items-center gap-1.5 hover:bg-osc-green/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <Download className="w-3 h-3" />
+            Export SVG
           </button>
         </div>
       </div>
