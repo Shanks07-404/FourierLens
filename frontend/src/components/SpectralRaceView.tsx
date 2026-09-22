@@ -257,8 +257,8 @@ export const SpectralRaceView: React.FC = () => {
   return (
     <div className="flex flex-col gap-5">
       {/* Control Strip */}
-      <div className="bg-osc-card border border-osc-border rounded-xl p-4 shadow-screen-glow flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="bg-osc-card border border-osc-border rounded-xl p-3 sm:p-4 shadow-screen-glow flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={handleStartResume}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-sm font-bold transition-colors ${
