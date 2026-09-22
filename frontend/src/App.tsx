@@ -86,10 +86,10 @@ export function App() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center bg-osc-panel p-1 rounded-xl border border-osc-grid">
+          <div className="flex items-center bg-osc-panel p-1 rounded-xl border border-osc-grid overflow-x-auto max-w-full">
             <button
               onClick={() => setActiveTab('epicycles')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all duration-200 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-mono whitespace-nowrap transition-all duration-200 ${
                 activeTab === 'epicycles'
                   ? 'bg-osc-green text-osc-bg font-bold shadow-phosphor-green'
                   : 'text-osc-slate hover:text-osc-text'
@@ -101,7 +101,7 @@ export function App() {
 
             <button
               onClick={() => setActiveTab('spectral')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all duration-200 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-mono whitespace-nowrap transition-all duration-200 ${
                 activeTab === 'spectral'
                   ? 'bg-osc-coral text-osc-bg font-bold shadow-phosphor-coral'
                   : 'text-osc-slate hover:text-osc-text'
@@ -125,7 +125,7 @@ export function App() {
       </header>
 
       {/* Main Content Area with Framer Motion transitions */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-6">
         <AnimatePresence mode="wait">
           {activeTab === 'epicycles' ? (
             <motion.div
