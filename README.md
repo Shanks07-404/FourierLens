@@ -1,5 +1,7 @@
 # FourierLens
 
+[![CI](https://github.com/Shanks07-404/FourierLens/actions/workflows/ci.yml/badge.svg)](https://github.com/Shanks07-404/FourierLens/actions/workflows/ci.yml)
+
 > **An oscilloscope-inspired playground connecting two ideas:**
 > 1. Any 2D shape is a sum of rotating circles (Fourier epicycles)
 > 2. Those same sin/cos features are why modern neural nets learn sharp detail instead of blur
