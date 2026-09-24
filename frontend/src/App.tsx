@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Zap, Radio, CircleDot, Info } from 'lucide-react';
+import { Activity, Zap, CircleDot, Info, Share2, Sun, Moon, Check } from 'lucide-react';
 import { useWebSocket } from './hooks/useSocketStream';
 import { FourierSocketMessage, EpicycleItem } from './api/socket';
 import { Point } from './utils/path-sampling';
@@ -12,6 +12,8 @@ import { SpectralRaceView } from './components/SpectralRaceView';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'epicycles' | 'spectral'>('epicycles');
+  const [isDimMode, setIsDimMode] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
 
   // WebSocket for Fourier Epicycles
   const { isConnected: isFourierConnected, lastMessage: fourierMessage, sendMessage: sendFourier } =
@@ -22,6 +24,23 @@ export function App() {
   const [epicycles, setEpicycles] = useState<EpicycleItem[]>([]);
   const [totalTerms, setTotalTerms] = useState<number>(1);
   const [numTerms, setNumTerms] = useState<number>(10);
+
+  // Restore shared state from URL hash on mount
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const params = new URLSearchParams(hash);
+      const termsParam = params.get('terms');
+      const tabParam = params.get('tab');
+      if (termsParam) {
+        const parsed = parseInt(termsParam, 10);
+        if (!isNaN(parsed) && parsed > 0) setNumTerms(parsed);
+      }
+      if (tabParam === 'spectral' || tabParam === 'epicycles') {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   // Handle incoming Fourier WebSocket messages
   useEffect(() => {
@@ -34,6 +53,14 @@ export function App() {
       setNumTerms((prev) => Math.min(Math.max(prev, 10), fourierMessage.total_terms));
     }
   }, [fourierMessage]);
+
+  const handleShare = () => {
+    const url = new URL(window.location.href);
+    url.hash = `terms=${numTerms}&tab=${activeTab}`;
+    navigator.clipboard.writeText(url.toString());
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 2000);
+  };
 
   const handlePathChange = useCallback(
     (points: Point[]) => {
@@ -62,7 +89,11 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen bg-osc-bg text-osc-text flex flex-col selection:bg-osc-green selection:text-osc-bg">
+    <div
+      className={`min-h-screen bg-osc-bg text-osc-text flex flex-col selection:bg-osc-green selection:text-osc-bg transition-[filter] duration-300 ${
+        isDimMode ? 'brightness-90 contrast-[0.95]' : ''
+      }`}
+    >
       {/* Top Header / Oscilloscope Brand Bar */}
       <header className="border-b border-osc-border bg-osc-card/80 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
@@ -112,14 +143,45 @@ export function App() {
             </button>
           </div>
 
-          {/* Connection Status Indicator */}
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-osc-slate bg-osc-bg px-3 py-1.5 rounded-lg border border-osc-grid">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                isFourierConnected ? 'bg-osc-green shadow-phosphor-green animate-pulse' : 'bg-red-500'
-              }`}
-            />
-            <span>{isFourierConnected ? 'ONLINE (8000)' : 'CONNECTING...'}</span>
+          {/* Controls: Dim Mode, Share Link, and Connection Status */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsDimMode(!isDimMode)}
+              title={isDimMode ? 'Switch to Normal Brightness' : 'Switch to Dim Oscilloscope Mode'}
+              className="p-1.5 rounded-lg bg-osc-bg text-osc-slate hover:text-osc-text border border-osc-grid transition-colors text-xs flex items-center gap-1.5 font-mono"
+            >
+              {isDimMode ? (
+                <Sun className="w-3.5 h-3.5 text-osc-coral" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-osc-slate" />
+              )}
+              <span className="hidden md:inline">{isDimMode ? 'Dim' : 'Bright'}</span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              title="Copy link to current state"
+              className="px-2.5 py-1.5 rounded-lg bg-osc-bg text-osc-slate hover:text-osc-green border border-osc-grid transition-colors text-xs flex items-center gap-1.5 font-mono"
+            >
+              {copiedShare ? (
+                <Check className="w-3.5 h-3.5 text-osc-green" />
+              ) : (
+                <Share2 className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden md:inline">{copiedShare ? 'Copied!' : 'Share'}</span>
+            </button>
+
+            {/* Connection Status Indicator */}
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-osc-slate bg-osc-bg px-3 py-1.5 rounded-lg border border-osc-grid">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isFourierConnected
+                    ? 'bg-osc-green shadow-phosphor-green animate-pulse'
+                    : 'bg-red-500'
+                }`}
+              />
+              <span>{isFourierConnected ? 'ONLINE (8000)' : 'CONNECTING...'}</span>
+            </div>
           </div>
         </div>
       </header>
